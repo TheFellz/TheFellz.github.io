@@ -47,12 +47,28 @@
     </div>
 
     <script>
-        // ⚠️ ВАЖНО! СЮДА НАДО ВСТАВИТЬ ВАШ КЛЮЧ API
-        const API_KEY = "bd5e378503939ddaee76f12ad7a97608";
+  // ЗАМЕНИТЕ ВЕСЬ БЛОК С API_KEY на это:
+
+async function fetchWeather() {
+    const weatherDiv = document.getElementById('weatherDisplay');
+    
+    try {
+        // Координаты Когалыма
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=62.2654&longitude=74.4791&current_weather=true`;
+        const response = await fetch(url);
+        const data = await response.json();
         
-        // Координаты Когалыма (я их уже нашёл)
-        const LATITUDE = 62.2654;
-        const LONGITUDE = 74.4791;
+        const temperature = Math.round(data.current_weather.temperature);
+        const windSpeed = data.current_weather.windspeed;
+        
+        weatherDiv.innerHTML = `🌡️ Температура: <b>${temperature}°C</b> | 💨 Ветер: <b>${windSpeed} м/с</b>`;
+        calculateChances(temperature, windSpeed);
+        
+    } catch (error) {
+        weatherDiv.innerHTML = '❌ Ошибка загрузки погоды';
+        console.error(error);
+    }
+}
 
         // Функция для расчёта шансов (ЗДЕСЬ НУЖНЫ ВАШИ ПРАВИЛА АКТИРОВКИ!)
         function calculateChances(temp, windSpeed) {
@@ -130,6 +146,7 @@
     </script>
 </body>
 </html>
+
 
 
 
