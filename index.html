@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Актировка в [Когалыме]</title>
+    <style>
+        /* Это стили CSS чтобы было красиво */
+        body { font-family: Arial, sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .container { max-width: 600px; width: 100%; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; margin-top: 0; }
+        .weather-card { background: #e6f0fa; padding: 20px; border-radius: 15px; text-align: center; margin: 20px 0; font-size: 1.4em; border: 1px solid #b0d4f0; }
+        .class-group { background: #f9f9f9; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 5px solid #2a7faa; }
+        .class-group h3 { margin: 0 0 10px 0; color: #2a7faa; }
+        .chance-bar { height: 30px; background: #4CAF50; color: white; text-align: center; line-height: 30px; border-radius: 15px; font-weight: bold; margin-top: 8px; }
+        .disclaimer { font-size: 0.8em; color: #666; text-align: center; margin-top: 25px; padding-top: 15px; border-top: 1px dashed #ccc; }
+        .footer-note { color: #888; font-size: 0.8em; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌡️ Актировка в [Название вашего города]</h1>
+        <p style="text-align: center; color: #555;">Данные обновляются каждые 30 минут</p>
+
+        <!-- Блок с погодой (сейчас тут пример, скоро сделаем автоматически) -->
+        <div class="weather-card" id="weatherDisplay">
+            🌬️ Загружаем данные о погоде...
+        </div>
+
+        <!-- Блок с результатами -->
+        <div id="resultArea">
+            <div class="class-group">
+                <h3>🏫 1-4 классы</h3>
+                <div id="chance1" class="chance-bar" style="width: 0%; background: #ccc;">0%</div>
+            </div>
+            <div class="class-group">
+                <h3>🏫 5-8 классы</h3>
+                <div id="chance2" class="chance-bar" style="width: 0%; background: #ccc;">0%</div>
+            </div>
+            <div class="class-group">
+                <h3>🏫 9-11 классы</h3>
+                <div id="chance3" class="chance-bar" style="width: 0%; background: #ccc;">0%</div>
+            </div>
+        </div>
+
+        <p class="disclaimer">
+            ⚠️ *Это предварительный расчёт на основе погодных данных. 
+            Официальное решение принимает Департамент образования. 
+            Информация для родителей носит справочный характер.
+        </p>
+        <p class="footer-note">❄️ Сайт создан для помощи родителям</p>
+    </div>
+
+    <script>
+        // ЗДЕСЬ НАЧИНАЕТСЯ ПРОГРАММНЫЙ КОД (JavaScript)
+
+        // --- НАСТРОЙКИ ПОГОДНОГО API (Open-Meteo - бесплатный, без ключа) ---
+        const LATITUDE = 62,2654;    // ШИРОТА вашего города (пример: Сургут)
+        const LONGITUDE = 74,4791;   // ДОЛГОТА вашего города (пример: Сургут)
+        // ⚠️ ВАЖНО: Найдите координаты своего города на сайте https://open-meteo.com/en/docs 
+        // или просто введите в Яндексе "координаты [ваш город]" и поменяйте цифры выше.
+
+        // --- ПОРОГИ АКТИРОВКИ (для Сургута, нужно поправить под свой город!) ---
+        // Данные из поиска: для 1-4 при ветре 5-10 м/с порог -25°C (пример)
+        function getChance(temp, windSpeed, grade) {
+            // Правила для Сургута (примерные, уточните на сайте администрации!)
+            if (grade === "1-4") {
+                if (windSpeed <= 5) return temp <= -27° ? 100 : (temp <= -27 ? 70 : 0); 
+                else if (windSpeed <= 10) return temp <= -25 ? 100 : (temp <= -22 ? 60 : 0);
+                else return temp <= -21 ? 100 : (temp <= -24 ? 50 : 0); // ветер сильный
+            }
+            if (grade === "5-8") {
+                if (windSpeed <= 5) return temp <= -30 ? 100 : (temp <= -29 ? 60 : 0);
+                else if (windSpeed <= 10) return temp <= -28 ? 100 : (temp <= -25 ? 50 : 0);
+                else return temp <= -24 ? 100 : (temp <= -27 ? 40 : 0);
+            }
+            if (grade === "9-11") {
+                if (windSpeed <= 5) return temp <= -34 ? 100 : (temp <= -32 ? 50 : 0);
+                else if (windSpeed <= 10) return temp <= -32 ? 100 : (temp <= -28 ? 40 : 0);
+                else return temp <= -28 ? 100 : (temp <= -31 ? 30 : 0);
+            }
+            return 0;
+        }
+
+        // --- ФУНКЦИЯ ПОЛУЧЕНИЯ ПОГОДЫ И РАСЧЁТА ---
+        async function fetchWeatherAndCalculate() {
+            const weatherDiv = document.getElementById('weatherDisplay');
+            const chance1 = document.getElementById('chance1');
+            const chance2 = document.getElementById('chance2');
+            const chance3 = document.getElementById('chance3');
+
+            // Показываем загрузку
+            weatherDiv.innerHTML = '⏳ Смотрим на термометр...';
+
+            try {
+                // 1. ДЕЛАЕМ ЗАПРОС К БЕСПЛАТНОМУ САЙТУ ПОГОДЫ (Open-Meteo)
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current_weather=true`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('Ошибка сети или сервера погоды');
+                }
+
+                const data = await response.json();
+                
+                // 2. ДОСТАЕМ ДАННЫЕ
+                const temperature = data.current_weather.temperature; // Температура
+                const windSpeed = data.current_weather.windspeed;     // Скорость ветра
+                
+                // 3. ПОКАЗЫВАЕМ ПОГОДУ НА САЙТЕ
+                weatherDiv.innerHTML = `🌡️ Температура: <b>${temperature}°C</b> | 💨 Ветер: <b>${windSpeed} м/с</b>`;
+
+                // 4. РАССЧИТЫВАЕМ ШАНС ДЛЯ КАЖДОЙ ГРУППЫ
+                let chance1Value = getChance(temperature, windSpeed, "1-4");
+                let chance2Value = getChance(temperature, windSpeed, "5-8");
+                let chance3Value = getChance(temperature, windSpeed, "9-11");
+
+                // Округляем до целого числа
+                chance1Value = Math.round(chance1Value);
+                chance2Value = Math.round(chance2Value);
+                chance3Value = Math.round(chance3Value);
+
+                // 5. ОТОБРАЖАЕМ РЕЗУЛЬТАТЫ
+                chance1.innerText = chance1Value + '%';
+                chance1.style.background = chance1Value > 50 ? '#4CAF50' : (chance1Value > 20 ? '#FF9800' : '#9E9E9E');
+                chance1.style.width = chance1Value + '%'; // ширина полоски
+
+                chance2.innerText = chance2Value + '%';
+                chance2.style.background = chance2Value > 50 ? '#4CAF50' : (chance2Value > 20 ? '#FF9800' : '#9E9E9E');
+                chance2.style.width = chance2Value + '%';
+
+                chance3.innerText = chance3Value + '%';
+                chance3.style.background = chance3Value > 50 ? '#4CAF50' : (chance3Value > 20 ? '#FF9800' : '#9E9E9E');
+                chance3.style.width = chance3Value + '%';
+
+            } catch (error) {
+                console.error(error);
+                weatherDiv.innerHTML = '❌ Не удалось загрузить погоду. Проверьте интернет.';
+                // Если ошибка - покажем тестовые данные (чтобы не было пусто)
+                chance1.innerText = '?';
+                chance2.innerText = '?';
+                chance3.innerText = '?';
+            }
+        }
+
+        // --- ЗАПУСКАЕМ ПОЛУЧЕНИЕ ПОГОДЫ СРАЗУ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ---
+        fetchWeatherAndCalculate();
+
+        // --- ОБНОВЛЯЕМ КАЖДЫЕ 5 МИНУТ (300000 миллисекунд) ---
+        setInterval(fetchWeatherAndCalculate, 300000);
+
+    </script>
+</body>
+</html>
