@@ -54,15 +54,31 @@
     <script>
         // ЗДЕСЬ НАЧИНАЕТСЯ ПРОГРАММНЫЙ КОД (JavaScript)
 
-        // --- НАСТРОЙКИ ПОГОДНОГО API (Open-Meteo - бесплатный, без ключа) ---
-        const LATITUDE = 61.25;    // ШИРОТА вашего города (пример: Сургут)
-        const LONGITUDE = 73.43;   // ДОЛГОТА вашего города (пример: Сургут)
-        // ⚠️ ВАЖНО: Найдите координаты своего города на сайте https://open-meteo.com/en/docs 
-        // или просто введите в Яндексе "координаты [ваш город]" и поменяйте цифры выше.
-
-        // --- ПОРОГИ АКТИРОВКИ (для Сургута, нужно поправить под свой город!) ---
-        // Данные из поиска: для 1-4 при ветре 5-10 м/с порог -25°C (пример)
-        function getChance(temp, windSpeed, grade) {
+       // Вместо старого кода с Open-Meteo вставьте это
+async function fetchWeatherAndCalculate() {
+    const API_KEY = "ВАШ_КЛЮЧ_СЮДА";
+    const LATITUDE = 55.7558;  // Широта вашего города
+    const LONGITUDE = 37.6173; // Долгота вашего города
+    
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${LATITUDE}&lon=${LONGITUDE}&appid=${API_KEY}&units=metric`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        const temperature = data.main.temp;
+        const windSpeed = data.wind.speed;
+        
+        // Дальше тот же код для отображения...
+        document.getElementById('weatherDisplay').innerHTML = `🌡️ Температура: <b>${temperature}°C</b> | 💨 Ветер: <b>${windSpeed} м/с</b>`;
+        
+        // Здесь ваши функции расчета шанса
+        calculateChances(temperature, windSpeed);
+        
+    } catch (error) {
+        console.error("Ошибка:", error);
+    }
+}
             // Правила для Сургута (примерные, уточните на сайте администрации!)
             if (grade === "1-4") {
                 if (windSpeed <= 5) return temp <= -27° ? 100 : (temp <= -27 ? 70 : 0); 
@@ -153,3 +169,4 @@
 </body>
 
 </html>
+
