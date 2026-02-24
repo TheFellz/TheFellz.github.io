@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Актировка в [Когалыме]</title>
+    <title>Актировка в Когалыме</title>
     <style>
-        /* Это стили CSS чтобы было красиво */
+        /* Стили остаются прежними, можно не менять */
         body { font-family: Arial, sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .container { max-width: 600px; width: 100%; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #333; margin-top: 0; }
@@ -14,17 +14,15 @@
         .class-group h3 { margin: 0 0 10px 0; color: #2a7faa; }
         .chance-bar { height: 30px; background: #4CAF50; color: white; text-align: center; line-height: 30px; border-radius: 15px; font-weight: bold; margin-top: 8px; }
         .disclaimer { font-size: 0.8em; color: #666; text-align: center; margin-top: 25px; padding-top: 15px; border-top: 1px dashed #ccc; }
-        .footer-note { color: #888; font-size: 0.8em; text-align: center; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌡️ Актировка в [Название вашего города]</h1>
-        <p style="text-align: center; color: #555;">Данные обновляются каждые 30 минут</p>
-
-        <!-- Блок с погодой (сейчас тут пример, скоро сделаем автоматически) -->
+        <h1>❄️ Актировка в Когалыме</h1>
+        
+        <!-- Блок с погодой -->
         <div class="weather-card" id="weatherDisplay">
-            🌬️ Загружаем данные о погоде...
+            ⏳ Загружаем данные о погоде...
         </div>
 
         <!-- Блок с результатами -->
@@ -44,129 +42,91 @@
         </div>
 
         <p class="disclaimer">
-            ⚠️ *Это предварительный расчёт на основе погодных данных. 
-            Официальное решение принимает Департамент образования. 
-            Информация для родителей носит справочный характер.
+            ⚠️ Данные носят справочный характер. Окончательное решение о посещении школы принимают родители.
         </p>
-        <p class="footer-note">❄️ Сайт создан для помощи родителям</p>
     </div>
 
     <script>
-        // ЗДЕСЬ НАЧИНАЕТСЯ ПРОГРАММНЫЙ КОД (JavaScript)
+        // ⚠️ ВАЖНО! СЮДА НАДО ВСТАВИТЬ ВАШ КЛЮЧ API
+        const API_KEY = "a765421c537d6c17aabec9a1d799b853";
+        
+        // Координаты Когалыма (я их уже нашёл)
+        const LATITUDE = 62.2654;
+        const LONGITUDE = 74.4791;
 
-       // Вместо старого кода с Open-Meteo вставьте это
-async function fetchWeatherAndCalculate() {
-    const API_KEY = "ВАШ_КЛЮЧ_СЮДА";
-    const LATITUDE = 55.7558;  // Широта вашего города
-    const LONGITUDE = 37.6173; // Долгота вашего города
-    
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${LATITUDE}&lon=${LONGITUDE}&appid=${API_KEY}&units=metric`;
-    
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        const temperature = data.main.temp;
-        const windSpeed = data.wind.speed;
-        
-        // Дальше тот же код для отображения...
-        document.getElementById('weatherDisplay').innerHTML = `🌡️ Температура: <b>${temperature}°C</b> | 💨 Ветер: <b>${windSpeed} м/с</b>`;
-        
-        // Здесь ваши функции расчета шанса
-        calculateChances(temperature, windSpeed);
-        
-    } catch (error) {
-        console.error("Ошибка:", error);
-    }
-}
-            // Правила для Сургута (примерные, уточните на сайте администрации!)
-            if (grade === "1-4") {
-                if (windSpeed <= 5) return temp <= -27° ? 100 : (temp <= -27 ? 70 : 0); 
-                else if (windSpeed <= 10) return temp <= -25 ? 100 : (temp <= -22 ? 60 : 0);
-                else return temp <= -21 ? 100 : (temp <= -24 ? 50 : 0); // ветер сильный
-            }
-            if (grade === "5-8") {
-                if (windSpeed <= 5) return temp <= -30 ? 100 : (temp <= -29 ? 60 : 0);
-                else if (windSpeed <= 10) return temp <= -28 ? 100 : (temp <= -25 ? 50 : 0);
-                else return temp <= -24 ? 100 : (temp <= -27 ? 40 : 0);
-            }
-            if (grade === "9-11") {
-                if (windSpeed <= 5) return temp <= -34 ? 100 : (temp <= -32 ? 50 : 0);
-                else if (windSpeed <= 10) return temp <= -32 ? 100 : (temp <= -28 ? 40 : 0);
-                else return temp <= -28 ? 100 : (temp <= -31 ? 30 : 0);
-            }
-            return 0;
-        }
-
-        // --- ФУНКЦИЯ ПОЛУЧЕНИЯ ПОГОДЫ И РАСЧЁТА ---
-        async function fetchWeatherAndCalculate() {
-            const weatherDiv = document.getElementById('weatherDisplay');
+        // Функция для расчёта шансов (ЗДЕСЬ НУЖНЫ ВАШИ ПРАВИЛА АКТИРОВКИ!)
+        function calculateChances(temp, windSpeed) {
             const chance1 = document.getElementById('chance1');
             const chance2 = document.getElementById('chance2');
             const chance3 = document.getElementById('chance3');
 
-            // Показываем загрузку
-            weatherDiv.innerHTML = '⏳ Смотрим на термометр...';
+            // 🟥 ВАЖНО: Здесь должны быть ваши правила для Когалыма!
+            // Сейчас стоят заглушки, чтобы сайт работал. Найдите официальные критерии и подставьте сюда.
+            
+            let c1 = 0, c2 = 0, c3 = 0;
+
+            // ПРИМЕР (нужно заменить на ваши цифры!):
+            if (temp <= -25) c1 = 100; else if (temp <= -20) c1 = 50;
+            if (temp <= -28) c2 = 100; else if (temp <= -23) c2 = 50;
+            if (temp <= -30) c3 = 100; else if (temp <= -25) c3 = 50;
+
+            // Отображаем результат
+            chance1.innerText = c1 + '%';
+            chance1.style.background = c1 > 50 ? '#4CAF50' : (c1 > 20 ? '#FF9800' : '#9E9E9E');
+            chance1.style.width = c1 + '%';
+
+            chance2.innerText = c2 + '%';
+            chance2.style.background = c2 > 50 ? '#4CAF50' : (c2 > 20 ? '#FF9800' : '#9E9E9E');
+            chance2.style.width = c2 + '%';
+
+            chance3.innerText = c3 + '%';
+            chance3.style.background = c3 > 50 ? '#4CAF50' : (c3 > 20 ? '#FF9800' : '#9E9E9E');
+            chance3.style.width = c3 + '%';
+        }
+
+        // Функция получения погоды с OpenWeatherMap
+        async function fetchWeather() {
+            const weatherDiv = document.getElementById('weatherDisplay');
+            
+            // Проверяем, вставил ли пользователь ключ
+            if (API_KEY === "ВСТАВЬТЕ_СЮДА_ВАШ_КЛЮЧ_С_OPENWEATHERMAP") {
+                weatherDiv.innerHTML = '❌ Ошибка: не вставлен ключ API!';
+                return;
+            }
 
             try {
-                // 1. ДЕЛАЕМ ЗАПРОС К БЕСПЛАТНОМУ САЙТУ ПОГОДЫ (Open-Meteo)
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current_weather=true`;
+                // Формируем запрос к OpenWeatherMap
+                const url = `https://api.openweathermap.org/data/2.5/weather?lat=${LATITUDE}&lon=${LONGITUDE}&appid=${API_KEY}&units=metric&lang=ru`;
+                
                 const response = await fetch(url);
                 
                 if (!response.ok) {
-                    throw new Error('Ошибка сети или сервера погоды');
+                    throw new Error(`Ошибка сервера: ${response.status}`);
                 }
-
+                
                 const data = await response.json();
                 
-                // 2. ДОСТАЕМ ДАННЫЕ
-                const temperature = data.current_weather.temperature; // Температура
-                const windSpeed = data.current_weather.windspeed;     // Скорость ветра
+                // Достаём температуру и скорость ветра
+                const temperature = Math.round(data.main.temp);
+                const windSpeed = data.wind.speed;
                 
-                // 3. ПОКАЗЫВАЕМ ПОГОДУ НА САЙТЕ
+                // Показываем погоду на сайте
                 weatherDiv.innerHTML = `🌡️ Температура: <b>${temperature}°C</b> | 💨 Ветер: <b>${windSpeed} м/с</b>`;
-
-                // 4. РАССЧИТЫВАЕМ ШАНС ДЛЯ КАЖДОЙ ГРУППЫ
-                let chance1Value = getChance(temperature, windSpeed, "1-4");
-                let chance2Value = getChance(temperature, windSpeed, "5-8");
-                let chance3Value = getChance(temperature, windSpeed, "9-11");
-
-                // Округляем до целого числа
-                chance1Value = Math.round(chance1Value);
-                chance2Value = Math.round(chance2Value);
-                chance3Value = Math.round(chance3Value);
-
-                // 5. ОТОБРАЖАЕМ РЕЗУЛЬТАТЫ
-                chance1.innerText = chance1Value + '%';
-                chance1.style.background = chance1Value > 50 ? '#4CAF50' : (chance1Value > 20 ? '#FF9800' : '#9E9E9E');
-                chance1.style.width = chance1Value + '%'; // ширина полоски
-
-                chance2.innerText = chance2Value + '%';
-                chance2.style.background = chance2Value > 50 ? '#4CAF50' : (chance2Value > 20 ? '#FF9800' : '#9E9E9E');
-                chance2.style.width = chance2Value + '%';
-
-                chance3.innerText = chance3Value + '%';
-                chance3.style.background = chance3Value > 50 ? '#4CAF50' : (chance3Value > 20 ? '#FF9800' : '#9E9E9E');
-                chance3.style.width = chance3Value + '%';
-
+                
+                // Запускаем расчёт шансов
+                calculateChances(temperature, windSpeed);
+                
             } catch (error) {
-                console.error(error);
-                weatherDiv.innerHTML = '❌ Не удалось загрузить погоду. Проверьте интернет.';
-                // Если ошибка - покажем тестовые данные (чтобы не было пусто)
-                chance1.innerText = '?';
-                chance2.innerText = '?';
-                chance3.innerText = '?';
+                console.error("Ошибка при получении погоды:", error);
+                weatherDiv.innerHTML = '❌ Не удалось загрузить погоду. Проверьте ключ API.';
             }
         }
 
-        // --- ЗАПУСКАЕМ ПОЛУЧЕНИЕ ПОГОДЫ СРАЗУ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ---
-        fetchWeatherAndCalculate();
-
-        // --- ОБНОВЛЯЕМ КАЖДЫЕ 5 МИНУТ (300000 миллисекунд) ---
-        setInterval(fetchWeatherAndCalculate, 300000);
-
+        // Запускаем получение погоды при загрузке страницы
+        fetchWeather();
+        
+        // Обновляем каждые 10 минут
+        setInterval(fetchWeather, 600000);
     </script>
 </body>
-
 </html>
-
